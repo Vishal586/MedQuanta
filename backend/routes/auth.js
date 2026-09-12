@@ -39,13 +39,24 @@ function signToken(user) {
 
 async function issueOtp(user) {
   const { code, codeHash, expiresAt } = generateOtp();
+  await sendOtpEmail(user.email, code);
   user.otp = { codeHash, expiresAt, attempts: 0, lockedUntil: null };
   await user.save();
-  await sendOtpEmail(user.email, code);
 }
 
 function minutesRemaining(until) {
   return Math.max(1, Math.ceil((until.getTime() - Date.now()) / 60000));
+}
+
+function handleOtpDeliveryError(err, res, fallbackMessage) {
+  if (err.code === "EMAIL_CONFIG_MISSING") {
+    return res.status(503).json({
+      message: "Email delivery is not configured. Set SMTP_HOST, SMTP_USER, and SMTP_PASS on the backend.",
+    });
+  }
+
+  console.error(err);
+  return res.status(500).json({ message: fallbackMessage });
 }
 
 // @route  POST /api/auth/register
@@ -156,8 +167,7 @@ router.post(
         message: "A verification code has been sent to your email",
       });
     } catch (err) {
-      console.error(err);
-      res.status(500).json({ message: "Server error during login" });
+      return handleOtpDeliveryError(err, res, "Server error during login");
     }
   }
 );
@@ -246,8 +256,7 @@ router.post("/resend-otp", otpLimiter, [body("userId").notEmpty()], async (req, 
     await issueOtp(user);
     res.json({ message: "A new code has been sent to your email" });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Server error while resending code" });
+    return handleOtpDeliveryError(err, res, "Server error while resending code");
   }
 });
 
