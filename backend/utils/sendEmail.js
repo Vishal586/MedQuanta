@@ -1,14 +1,24 @@
 const nodemailer = require("nodemailer");
 
+class EmailConfigError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "EmailConfigError";
+    this.code = "EMAIL_CONFIG_MISSING";
+  }
+}
+
 // Uses real SMTP if credentials are set in .env. Otherwise falls back to
 // logging the email to the console — so OTP login works out of the box in
 // local development without requiring an email provider.
 function getTransport() {
   if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+    const port = Number(process.env.SMTP_PORT) || 587;
+
     return nodemailer.createTransport({
       host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: false,
+      port,
+      secure: process.env.SMTP_SECURE === "true" || port === 465,
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
@@ -17,7 +27,7 @@ function getTransport() {
   }
 
   if (process.env.NODE_ENV === "production") {
-    throw new Error("SMTP_HOST, SMTP_USER, and SMTP_PASS are required in production");
+    throw new EmailConfigError("SMTP_HOST, SMTP_USER, and SMTP_PASS are required in production");
   }
 
   return null;
@@ -43,4 +53,4 @@ async function sendOtpEmail(to, code) {
   });
 }
 
-module.exports = { sendOtpEmail };
+module.exports = { sendOtpEmail, EmailConfigError };
