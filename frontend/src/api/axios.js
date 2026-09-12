@@ -15,7 +15,7 @@ function getBaseURL() {
 
   return process.env.NODE_ENV === "production"
     ? "/api"
-    : "http://localhost:5000/api";
+    : "https://medquanta-back1.onrender.com/api";
 }
 
 const api = axios.create({
