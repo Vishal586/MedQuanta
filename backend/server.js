@@ -46,7 +46,7 @@ function parseAllowedOrigins() {
     .filter(Boolean);
 
   if (configuredOrigins.length === 0) {
-    configuredOrigins.push("https://medquanta-front.onrender.com/");
+    configuredOrigins.push("http://localhost:3000");
   }
 
   configuredOrigins.push("https://medquanta-front.onrender.com/");
