@@ -46,10 +46,10 @@ function parseAllowedOrigins() {
     .filter(Boolean);
 
   if (configuredOrigins.length === 0) {
-    configuredOrigins.push("http://localhost:3000");
+    configuredOrigins.push("https://medquanta-front.onrender.com/");
   }
 
-  configuredOrigins.push("https://medquanta-1.onrender.com");
+  configuredOrigins.push("https://medquanta-front.onrender.com/");
 
   return new Set(configuredOrigins.map(normalizeOrigin));
 }
