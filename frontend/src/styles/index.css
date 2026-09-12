@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-canvas text-ink font-sans antialiased;
+}
+
+.field-label {
+  @apply block text-sm text-muted mb-1;
+}
+
+.field-input {
+  @apply w-full border border-hairline bg-panel px-3 py-2 rounded-none text-ink
+         focus:outline-none focus:border-teal focus:ring-1 focus:ring-teal transition-colors;
+}
+
+.btn-primary {
+  @apply bg-teal text-white px-5 py-2.5 font-medium hover:bg-teal-dark
+         transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-secondary {
+  @apply border border-hairline text-ink px-5 py-2.5 font-medium hover:border-teal
+         transition-colors;
+}
+
+.error-text {
+  @apply text-clay text-sm mt-1;
+}
+
+@media print {
+  body {
+    background: white;
+  }
+  nav, .btn-secondary, .btn-primary {
+    display: none;
+  }
+}
